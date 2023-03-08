@@ -3,6 +3,10 @@ package com.mocha.shopwebsite.controllers;
 import com.mocha.shopwebsite.data.*;
 
 
+import com.mocha.shopwebsite.repositories.BasketRepository;
+import com.mocha.shopwebsite.repositories.ItemRepository;
+import com.mocha.shopwebsite.repositories.UserRepository;
+import com.mocha.shopwebsite.utility.Helper;
 import jakarta.servlet.http.HttpSession;
 
 import org.springframework.stereotype.Controller;
@@ -33,7 +37,6 @@ public class ItemsController {
         this.itemRepository = itemRepository;
         this.basketRepository = basketRepository;
         this.userRepository = userRepository;
-
     }
 
     /**
@@ -47,7 +50,7 @@ public class ItemsController {
     public String showItemsPage(Model model, HttpSession session) {
         Iterable<Item> items = itemRepository.findAll();
         model.addAttribute("items", items);
-        model.addAttribute("loggedIn", Helper.getInstance().isLoggedIn(session));
+        model.addAttribute("loggedIn", Helper.isLoggedIn(session));
         return "catalog";
     }
 
@@ -80,8 +83,7 @@ public class ItemsController {
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     public String addItemSubmit(@ModelAttribute Item item, Model model, HttpSession session) {
         //model.addAttribute("item", item); // todo remove this line if it works without this
-        User user = userRepository.findUserByUsername((String) session.getAttribute("username"));
-        item.setUserId(user.getId());
+        item.setUserId(Helper.GetUser(session, userRepository).getId());
         LOGGER.info("User ID:{}", item.getUserId());
         itemRepository.save(item);
 
@@ -106,7 +108,7 @@ public class ItemsController {
             LOGGER.info("Item name:{}", item.getName());
         }
 
-        model.addAttribute("loggedIn", Helper.getInstance().isLoggedIn(session));
+        model.addAttribute("loggedIn", Helper.isLoggedIn(session));
 
         return "detail_product";
     }
@@ -123,7 +125,7 @@ public class ItemsController {
         Iterable<Item> items = itemRepository.findAll();
         model.addAttribute("items", items);
 
-        model.addAttribute("loggedIn", Helper.getInstance().isLoggedIn(session));
+        model.addAttribute("loggedIn", Helper.isLoggedIn(session));
 
         return "itemsDelete";
     }
@@ -160,6 +162,7 @@ public class ItemsController {
     }
 
     /**
+     * Handles the HTML POST request for the /delete route.
      * Deletes item from itemRepository based on its unique identifier
      *
      * @param id unique identifier of item to be deleted
@@ -173,25 +176,28 @@ public class ItemsController {
     }
 
     /**
-     * Update item object based on its unique identifier.
-     *
+     * Handles the HTML POST request for the /update route.
+     * Fetches an Item from ItemRepository using its unique ID and applies the updated values.
      * @param id        Unique identifier of item to be updated
      * @param string    Image URL string to update item Image property
      * @param stringone Name string to update item Name property
-     * @return a redirect to /items
+     * @return a redirect to /items provided successful update, otherwise returns the name of the error HTML template
      */
 
     @PostMapping("/update")
     public String updateItem(@RequestParam Long id, @RequestParam String string,
                              @RequestParam String stringone) {
+
         Optional<Item> optionalItem = itemRepository.findById(id);
         if (optionalItem.isPresent()) {
             Item item = optionalItem.get();
             item.setName(stringone);
             item.setImage(string);
             itemRepository.save(item);
+            return "redirect:/items";
         }
-        return "redirect:/items";
+
+        return "error";
     }
 
     /**
@@ -250,10 +256,10 @@ public class ItemsController {
             item.ifPresent(items::add);
         }
 
-        model.addAttribute("items", items); // adding to model
-        model.addAttribute("loggedIn", Helper.getInstance().isLoggedIn(session));
+        model.addAttribute("items", items);
+        model.addAttribute("loggedIn", Helper.isLoggedIn(session));
 
-        return "checkout"; // return the basket
+        return "checkout";
     }
 
     private User getUser(HttpSession session) {

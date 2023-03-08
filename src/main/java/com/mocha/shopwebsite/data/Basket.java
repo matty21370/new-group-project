@@ -5,6 +5,10 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 
+/**
+ * Stores information related to customer purchases.
+ * Stored in the SQL table named 'Basket', and is used primarily for displaying the checkout page.
+ */
 @Entity
 public class Basket {
 

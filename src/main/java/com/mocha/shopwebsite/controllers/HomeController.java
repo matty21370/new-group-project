@@ -1,17 +1,19 @@
 package com.mocha.shopwebsite.controllers;
 
-import com.mocha.shopwebsite.data.Item;
-import com.mocha.shopwebsite.data.ItemRepository;
+import com.mocha.shopwebsite.repositories.ItemRepository;
+import com.mocha.shopwebsite.utility.Helper;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
+/**
+ *
+ */
 @Controller
 public class HomeController {
 
-    @Autowired
     private final ItemRepository itemRepository;
 
     public HomeController(ItemRepository itemRepository) {
@@ -30,7 +32,7 @@ public class HomeController {
 
         model.addAttribute("items", itemRepository.findAll());
 
-        if(Helper.getInstance().isLoggedIn(session)) {
+        if(Helper.isLoggedIn(session)) {
             model.addAttribute("username", session.getAttribute("username"));
             model.addAttribute("loggedIn", true);
         } else {
@@ -41,14 +43,16 @@ public class HomeController {
     }
 
     /**
-     *
-     * @param model
-     * @param session
-     * @return
+     * Handles the HTML GET request for the /account URL. Responsible for displaying the 'my_account.html' webpage given
+     * the user has appropriate authentication.
+     * @param model Acts as a link between this method and the HTML page, allowing data to be injected into the page
+     *              dynamically.
+     * @param session Stores user data throughout their session on the web app, such as their username.
+     * @return The name of the template that renders the HTML page.
      */
     @GetMapping("/account")
     public String showAccountPage(Model model, HttpSession session) {
-        if(Helper.getInstance().isLoggedIn(session)) {
+        if(Helper.isLoggedIn(session)) {
             return "redirect:/login";
         }
 
@@ -58,7 +62,7 @@ public class HomeController {
 
     @GetMapping("/about")
     public String showAboutPage(Model model, HttpSession session) {
-        model.addAttribute("loggedIn", Helper.getInstance().isLoggedIn(session));
+        model.addAttribute("loggedIn", Helper.isLoggedIn(session));
 
         return "about";
     }

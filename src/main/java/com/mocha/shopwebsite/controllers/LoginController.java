@@ -1,7 +1,8 @@
 package com.mocha.shopwebsite.controllers;
 import com.mocha.shopwebsite.data.User;
-import com.mocha.shopwebsite.data.UserRepository;
+import com.mocha.shopwebsite.repositories.UserRepository;
 
+import com.mocha.shopwebsite.utility.Helper;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -25,7 +26,7 @@ public class LoginController {
   }
 
   model.addAttribute("loginForm", new User());
-  model.addAttribute("loggedIn", Helper.getInstance().isLoggedIn(session));
+  model.addAttribute("loggedIn", Helper.isLoggedIn(session));
 
   return "sign-in";
  }
@@ -54,7 +55,7 @@ public class LoginController {
  @GetMapping("/register")
  public String getRegisterPage(HttpSession session, Model model) {
   boolean loggedIn = session.getAttribute("username") != null;
-  model.addAttribute("loggedIn", Helper.getInstance().isLoggedIn(session));
+  model.addAttribute("loggedIn", Helper.isLoggedIn(session));
 
   if(loggedIn) {
    return "home";

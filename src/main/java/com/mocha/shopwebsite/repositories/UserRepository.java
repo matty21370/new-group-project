@@ -1,4 +1,5 @@
-package com.mocha.shopwebsite.data;
+package com.mocha.shopwebsite.repositories;
+import com.mocha.shopwebsite.data.User;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
