@@ -45,7 +45,6 @@ public class ItemsController {
      * @param session the HttpSession of the request calling this interface
      * @return the catalog template name
      */
-
     @GetMapping("/items")
     public String showItemsPage(Model model, HttpSession session) {
         Iterable<Item> items = itemRepository.findAll();
@@ -71,10 +70,8 @@ public class ItemsController {
         model.addAttribute("loggedIn", session.getAttribute("username") != null);
         return "add-listing";
     }
-
     /**
      * Adds an item object to itemRepository through JpaRepository method save().
-     *
      * @param item    item object to be added
      * @param model   the Model that is used to render data into the view
      * @param session the HTTP session calling the method
@@ -82,7 +79,7 @@ public class ItemsController {
      */
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     public String addItemSubmit(@ModelAttribute Item item, Model model, HttpSession session) {
-        //model.addAttribute("item", item); // todo remove this line if it works without this
+        model.addAttribute("item", item); // todo remove this line if it works without this
         item.setUserId(Helper.GetUser(session, userRepository).getId());
         LOGGER.info("User ID:{}", item.getUserId());
         itemRepository.save(item);

@@ -5,6 +5,15 @@ import jakarta.persistence.*;
 @Entity
 public class Item {
 
+
+	public Item(){};
+
+	public Item(Integer id, Integer userId, String name) {
+		this.id = id;
+		this.userId = userId;
+		this.name = name;
+	}
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Integer id;
