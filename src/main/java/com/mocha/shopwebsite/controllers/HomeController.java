@@ -1,5 +1,6 @@
 package com.mocha.shopwebsite.controllers;
 
+import com.mocha.shopwebsite.data.Item;
 import com.mocha.shopwebsite.repositories.ItemRepository;
 import com.mocha.shopwebsite.utility.Helper;
 import jakarta.servlet.http.HttpSession;
@@ -8,18 +9,20 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  *
  */
 @Controller
 public class HomeController {
 
-    private final ItemRepository itemRepository;
+    private ItemRepository itemRepository;
 
     public HomeController(ItemRepository itemRepository) {
         this.itemRepository = itemRepository;
     }
-
 
     /**
      * Shows homepage with session data if one is instanced
@@ -30,7 +33,10 @@ public class HomeController {
     @GetMapping(value = {"/", "/home"})
     public String showHomePage(Model model, HttpSession session) {
 
-        model.addAttribute("items", itemRepository.findAll());
+        //todo Cache result of itemRepository query
+        List<Item> items = itemRepository.findAll();
+
+        model.addAttribute("items", items.size() == 0 ? "No items found" : items);
 
         if(Helper.isLoggedIn(session)) {
             model.addAttribute("username", session.getAttribute("username"));
@@ -45,7 +51,7 @@ public class HomeController {
     /**
      * Handles the HTML GET request for the /account URL. Responsible for displaying the 'my_account.html' webpage given
      * the user has appropriate authentication.
-     * @param model Acts as a link between this method and the HTML page, allowing data to be injected into the page
+     * @param model Acts as a link between the controller and the HTML page, allowing data to be injected into the page
      *              dynamically.
      * @param session Stores user data throughout their session on the web app, such as their username.
      * @return The name of the template that renders the HTML page.
