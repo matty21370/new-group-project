@@ -56,8 +56,8 @@ public class ItemsController {
 
     /**
      * Retrieves the add item page based upon access control
-     * @param model   holds application data
-     * @param session holds current HttpSession data
+     * @param model   the Model that is used to render data into the view
+     * @param session the HTTP session of the request calling this interface
      * @return the add item page template name or a redirect to the login if not authenticated
      */
     @GetMapping("/add")
@@ -76,9 +76,9 @@ public class ItemsController {
      * Adds an item object to itemRepository through JpaRepository method save().
      *
      * @param item    item object to be added
-     * @param model   holds application data, item object in this instance
-     * @param session holds session data, user credentials in this instance
-     * @return redirects to showItemsPage method
+     * @param model   the Model that is used to render data into the view
+     * @param session the HTTP session calling the method
+     * @return redirects to /items URL which displays the catalog HTML template
      */
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     public String addItemSubmit(@ModelAttribute Item item, Model model, HttpSession session) {
@@ -91,12 +91,13 @@ public class ItemsController {
     }
 
     /**
-     * Finds item object in itemRepository through its unique identifier
+     * Finds item object in itemRepository through its unique identifier. Displays the 'detail_product.html' page
+     * containing product details
      *
      * @param id      unique identifier of item required
-     * @param model   holds application data, item object in this instance
-     * @param session holds session data, user credentials in this instance
-     * @return detail_product.html
+     * @param model   the Model that is used to render data into the view
+     * @param session the HTTP session that is calling this method
+     * @return the template name that renders the HTML page for the item
      */
     @RequestMapping("/item")
     public String getItem(@RequestParam long id, Model model, HttpSession session) {
@@ -114,11 +115,10 @@ public class ItemsController {
     }
 
     /**
-     * Returns a link to itemsDelete.html containing all item objects in itemRepository
-     *
-     * @param model   holds application data
-     * @param session holds HttpSession data
-     * @return itemsDelete.html
+     *Handles the GET request for the /itemsDelete URL. Displays the template for 'itemsDelete.HTML'
+     * @param model   the Model that is used to render data into the view
+     * @param session the HTTP session that is calling the method
+     * @return the HTML template for the webpage
      */
     @GetMapping("/itemsDelete")
     public String showItemsDeletePage(Model model, HttpSession session) {
@@ -132,9 +132,8 @@ public class ItemsController {
 
     /**
      * Adds item object to itemRepository through JpaRepository method save()
-     *
      * @param items object to be added
-     * @return a redirect to method requesting /list
+     * @return a redirect to method responsible for handling requests to /list URL
      */
     @PostMapping("/saveItem")
     public String saveEmployee(@ModelAttribute Item items) {
@@ -143,8 +142,7 @@ public class ItemsController {
     }
 
     /**
-     * Shows form to update item list.
-     *
+     * Handles request for /showUpdateForm URL based on whether item is in repository.
      * @param id Unique identifier of item in items list.
      * @return detail_product.html || add-item-form.html
      */
@@ -164,9 +162,8 @@ public class ItemsController {
     /**
      * Handles the HTML POST request for the /delete route.
      * Deletes item from itemRepository based on its unique identifier
-     *
      * @param id unique identifier of item to be deleted
-     * @return redirect to /itemsDelete
+     * @return redirect to /itemsDelete URL
      */
 
     @PostMapping("/delete")
@@ -201,11 +198,11 @@ public class ItemsController {
     }
 
     /**
-     * Method to add i
-     *
+     * Handles GET request for /addToBasket URL. Adds basket object to basket repository. Sets basket object id
+     * property to be same as item ID.
      * @param id      unique identifier to set to Basket Object
-     * @param session Holds HttpSession data if one has been instanced
-     * @return redirects to /login || /items
+     * @param session the HTTP session calling the method
+     * @return redirects to /login URL|| /items URL
      */
     @GetMapping("/addToBasket")
     public String addToBasket(@RequestParam long id, HttpSession session) {
@@ -227,8 +224,7 @@ public class ItemsController {
 
     /**
      * Returns number of items in itemRepository
-     *
-     * @return numOfRecords variable with a value of number of items
+     * @return a value with number of items
      */
     @GetMapping("/records")
     @ResponseBody
@@ -237,17 +233,17 @@ public class ItemsController {
     }
 
     /**
-     * Creates a list to add items based on a unique identifier supplied by basket object, adds item to list if item is present
-     *
-     * @param model   Holds application data, item objects in this instance
-     * @param session Holds session data if one has been instanced
-     * @return checkout
+     * Handles the GET request for /checkout URL. Creates a list to add items based on a unique identifier supplied by
+     * basket object.
+     * adds item to list if available in repository.
+     * @param model   the Model used to render data into the view
+     * @param session the HTTP session calling the method
+     * @return the checkout.HTML template
      */
     @GetMapping("/checkout")
     public String viewBasket(Model model, HttpSession session) {
 
         User user = getUser(session);
-
         List<Basket> orders = basketRepository.findByUserId(user.getId());
         List<Item> items = new ArrayList<>();
 
@@ -255,7 +251,6 @@ public class ItemsController {
             Optional<Item> item = itemRepository.findById(basket.getId());
             item.ifPresent(items::add);
         }
-
         model.addAttribute("items", items);
         model.addAttribute("loggedIn", Helper.isLoggedIn(session));
 
@@ -268,10 +263,9 @@ public class ItemsController {
     }
 
     /**
-     * deletes basket object from basketRepository
-     *
+     * Handles the HTTP POST request for checkoutOne URL. Responsible for deleting basket object from basketRepository
      * @param id unique identifier for Basket object to be deleted
-     * @return checkout
+     * @return the checkout.HTML template
      */
     @PostMapping("/checkoutOne")
     public String deleteItem(@RequestParam Integer id) {
@@ -280,9 +274,9 @@ public class ItemsController {
     }
 
     /**
-     * Deletes all objects from basketRepository when checking out
-     *
-     * @return checkingOut
+     * Handles HTTP POST request for /checkingOut URL. Responsible for deleting all objects from basket repository
+     * when checking out.
+     * @return the checkingOut.HTML template.
      */
     @PostMapping("/checkingOut")
     public String checkingOut() {

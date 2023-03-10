@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class HomeController {
 
+
     private final ItemRepository itemRepository;
 
     public HomeController(ItemRepository itemRepository) {
@@ -22,10 +23,11 @@ public class HomeController {
 
 
     /**
-     * Shows homepage with session data if one is instanced
-     * @param model Holds application data, session username and Logged in status
-     * @param session Holds session data
-     * @return home.html
+     * Handles the HTML GET request for the /home and / URLs. Responsible for displaying the 'home.html' webpage with
+     * the appropriate authentication
+     * @param model the Model that is used to render dynamic data into the view
+     * @param session the HttpSession of the request calling this interface
+     * @return the home template name
      */
     @GetMapping(value = {"/", "/home"})
     public String showHomePage(Model model, HttpSession session) {
@@ -60,6 +62,12 @@ public class HomeController {
         return "my_account";
     }
 
+    /**
+     * Handles the HTML GET request for the /about URL. Responsible for displaying the about.html webpage
+     * @param model the Model that is used to render data into the view
+     * @param session the HTTP session of the request calling this interface
+     * @return the HTML template for the about page
+     */
     @GetMapping("/about")
     public String showAboutPage(Model model, HttpSession session) {
         model.addAttribute("loggedIn", Helper.isLoggedIn(session));
