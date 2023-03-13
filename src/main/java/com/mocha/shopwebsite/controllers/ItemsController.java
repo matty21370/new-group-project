@@ -80,7 +80,7 @@ public class ItemsController {
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     public String addItemSubmit(@ModelAttribute Item item, Model model, HttpSession session) {
         model.addAttribute("item", item); // todo remove this line if it works without this
-        item.setUserId(Helper.GetUser(session, userRepository).getId());
+        item.setUserId(Helper.GetUser(session, this.userRepository).getId());
         LOGGER.info("User ID:{}", item.getUserId());
         itemRepository.save(item);
 
